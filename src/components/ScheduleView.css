@@ -1,0 +1,199 @@
+.schedule-view {
+  max-width: 100%;
+}
+
+/* Controls card */
+.schedule-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.schedule-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 180px;
+}
+
+.schedule-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.schedule-label strong {
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+.schedule-control-days {
+  flex: 1;
+  min-width: 320px;
+}
+
+.schedule-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.schedule-preset-chip {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.schedule-preset-chip:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.schedule-preset-chip.active {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: var(--accent-start);
+  color: var(--accent-start);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--accent-start);
+}
+
+.schedule-custom-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--bg-surface);
+  padding: 2px 4px 2px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+}
+
+.schedule-custom-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.schedule-num-input {
+  width: 60px;
+  text-align: center;
+  padding: 4px 8px;
+  border: none;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-full);
+}
+
+.schedule-control-actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-left: auto;
+}
+
+.schedule-generate-btn {
+  padding: var(--space-sm) var(--space-xl);
+  font-size: var(--font-size-base);
+}
+
+.schedule-generate-btn:not(:disabled):hover {
+  animation: pulse 2s ease infinite;
+}
+
+/* Warnings */
+.schedule-warnings {
+  margin-bottom: var(--space-lg);
+}
+
+.schedule-warning {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  color: var(--color-warning);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+}
+
+/* Stats */
+.schedule-stats {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.schedule-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  min-width: 100px;
+}
+
+.schedule-stat-value {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.schedule-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ---- Print-only header & footer ---- */
+.print-header,
+.print-footer {
+  display: none;
+}
+
+@media print {
+  .print-header {
+    display: block;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .print-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 2px 0;
+  }
+
+  .print-meta {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 7pt;
+    color: #555;
+  }
+
+  .print-footer {
+    display: block;
+    text-align: right;
+    margin-top: 4px;
+    font-size: 6pt;
+    color: #999;
+  }
+}

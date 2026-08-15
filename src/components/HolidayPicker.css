@@ -1,0 +1,119 @@
+.holiday-picker {
+  max-width: 900px;
+}
+
+.holiday-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .holiday-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Calendar card */
+.holiday-calendar-card {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.holiday-calendar-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.hint-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+}
+
+.hint-dot-holiday {
+  background: var(--color-danger);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.hint-dot-weekend {
+  background: var(--text-tertiary);
+  opacity: 0.3;
+}
+
+/* Holiday list */
+.holiday-list-section {
+  min-width: 0;
+}
+
+.holiday-list-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.holiday-list {
+  padding: var(--space-sm);
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.holiday-item {
+  gap: var(--space-sm);
+}
+
+.holiday-date-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.holiday-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.holiday-item-date {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.holiday-label-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  padding: 0;
+  width: 100%;
+}
+
+.holiday-label-input:focus {
+  color: var(--text-secondary);
+}
+
+.holiday-label-input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}

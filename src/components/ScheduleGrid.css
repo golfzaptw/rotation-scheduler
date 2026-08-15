@@ -1,0 +1,141 @@
+.schedule-grid-wrapper {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.schedule-grid-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+/* Table */
+.schedule-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Header cells */
+.schedule-th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-secondary);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--glass-border);
+  white-space: nowrap;
+}
+
+.schedule-th-student {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  background: var(--bg-secondary);
+  min-width: 180px;
+  text-align: left;
+}
+
+.schedule-th-date {
+  text-align: center;
+  min-width: 70px;
+  padding: var(--space-sm) var(--space-sm);
+}
+
+.schedule-date-dow {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  margin-bottom: 1px;
+}
+
+.schedule-date-day {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.schedule-date-month {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+/* Body cells */
+.schedule-td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.schedule-td-student {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: var(--bg-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 180px;
+  border-right: 1px solid var(--glass-border);
+}
+
+.schedule-student-index {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.schedule-student-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Station cell */
+.schedule-td-cell {
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.5px;
+  min-width: 70px;
+  padding: var(--space-sm) var(--space-sm);
+  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  cursor: default;
+}
+
+.schedule-td-cell:hover {
+  filter: brightness(1.4);
+}
+
+.schedule-cell-text {
+  display: block;
+  white-space: nowrap;
+}
+
+/* Alternating row subtle bg */
+.schedule-table tbody tr:nth-child(even) .schedule-td-student {
+  background: var(--bg-elevated);
+}

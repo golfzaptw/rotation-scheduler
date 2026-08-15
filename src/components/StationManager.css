@@ -1,0 +1,56 @@
+.station-manager {
+  max-width: 600px;
+}
+
+.station-add-row {
+  margin-bottom: var(--space-lg);
+}
+
+.station-list {
+  padding: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.station-item {
+  transition: all var(--transition-base);
+  border: 1px solid transparent;
+}
+
+.station-item.dragging {
+  opacity: 0.4;
+}
+
+.station-item.drag-over {
+  border-top: 2px solid var(--accent-start);
+}
+
+.station-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.station-order {
+  width: 24px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.station-edit-input {
+  flex: 1;
+}
+
+.station-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.station-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}

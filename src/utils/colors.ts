@@ -18,7 +18,8 @@ const STATION_COLORS = [
 ];
 
 export function getStationColor(index: number) {
-  return STATION_COLORS[index % STATION_COLORS.length];
+  const colorGroup = Math.floor(index / 7);
+  return STATION_COLORS[colorGroup % STATION_COLORS.length];
 }
 
 export function getStationColorCount() {

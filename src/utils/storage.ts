@@ -22,6 +22,13 @@ export function saveToStorage<T>(key: string, data: T): void {
 
 /* ---- Default seeds ---- */
 
+const DEFAULT_STUDENTS: Student[] = [
+  'อัฐภิญญา', 'ศยามล', 'ปุญชรัสมิ์', 'สุธารินี', 'เพราผกา', 'ปียาภรณ์', 'นฤดี',
+  'อาทิตย์', 'พนิดา', 'พรพิมล', 'เจนจิรา', 'นรมน', 'วิบูลย์ศิริ', 'ลักษณนันทมน',
+  'สุพิชญ์ชา', 'สิริรัตน์', 'วรเมธ', 'นนทวัฒน์', 'กรรณิกา', 'กาญจนา', 'ชญาดา',
+  'ธีรภัทร์', 'เบญญาภา', 'ปนิฏฐา', 'พรสวรรค์', 'ริยาภรณ์', 'สุพรรณี', 'สกาวใจ'
+].map((name, index) => ({ id: crypto.randomUUID(), name, sortOrder: index }));
+
 const DEFAULT_STATIONS: Station[] = [
   'PACU ศัลย์ ชั้น 7',
   'Outside',
@@ -54,7 +61,12 @@ const DEFAULT_STATIONS: Station[] = [
 ].map((name, index) => ({ id: crypto.randomUUID(), name, sortOrder: index }));
 
 export function loadStudents(): Student[] {
-  return loadFromStorage<Student[]>(STORAGE_KEYS.students, []);
+  const stored = loadFromStorage<Student[] | null>(STORAGE_KEYS.students, null);
+  if (stored === null || stored.length === 0) {
+    saveToStorage(STORAGE_KEYS.students, DEFAULT_STUDENTS);
+    return DEFAULT_STUDENTS;
+  }
+  return stored;
 }
 
 export function saveStudents(students: Student[]): void {

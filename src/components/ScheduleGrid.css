@@ -132,7 +132,11 @@
 
 .schedule-cell-text {
   display: block;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 80px;
+  margin: 0 auto;
+  line-height: 1.2;
 }
 
 /* Alternating row subtle bg */

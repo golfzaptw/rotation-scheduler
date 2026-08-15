@@ -23,12 +23,35 @@ export function saveToStorage<T>(key: string, data: T): void {
 /* ---- Default seeds ---- */
 
 const DEFAULT_STATIONS: Station[] = [
-  { id: crypto.randomUUID(), name: 'PACU', sortOrder: 0 },
-  { id: crypto.randomUUID(), name: 'OR', sortOrder: 1 },
-  { id: crypto.randomUUID(), name: 'LR', sortOrder: 2 },
-  { id: crypto.randomUUID(), name: 'TR', sortOrder: 3 },
-  { id: crypto.randomUUID(), name: 'OPD', sortOrder: 4 },
-];
+  'PACU ศัลย์ ชั้น 7',
+  'Outside',
+  'TR2',
+  'LR1',
+  'OPD ศัลย์ 7-1',
+  'F1',
+  'ENT4',
+  'PACU อบ.',
+  'E1',
+  'ENT6',
+  'EYE8',
+  'LR3',
+  'PNB',
+  'F2',
+  'TR3',
+  'PACU LR',
+  'OPD ศัลย์ 7-2',
+  'OR อบ.1',
+  'R36',
+  'ENT5',
+  'LR2',
+  'F3',
+  'PACU สก 1',
+  'OR อบ.2',
+  'PACU สก 2',
+  'C/S',
+  'GI',
+  'EYE7'
+].map((name, index) => ({ id: crypto.randomUUID(), name, sortOrder: index }));
 
 export function loadStudents(): Student[] {
   return loadFromStorage<Student[]>(STORAGE_KEYS.students, []);

@@ -184,6 +184,7 @@
   .print-meta {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 6px;
     font-size: 7pt;
     color: #555;

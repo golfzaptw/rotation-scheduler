@@ -15,9 +15,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   const exportCSV = () => {
     const headers = [
       'Student',
-      ...schedule.workingDays.map((d) =>
-        format(parseISO(d), 'EEE dd/MM/yyyy')
-      ),
+      ...schedule.columns.map((c) => c.weeks.map((w) => `W${w.weekIndex + 1}: ${w.label}`).join(' | ')),
     ];
 
     const rows = students.map((student, idx) => [
@@ -43,12 +41,15 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   const exportJSON = () => {
     const data = {
       generatedAt: new Date().toISOString(),
-      workingDays: schedule.workingDays,
+      columns: schedule.columns,
       students: students.map((s, idx) => ({
         name: s.name,
-        assignments: schedule.workingDays.reduce(
-          (acc, day, dayIdx) => {
-            acc[day] = schedule.grid[idx]?.[dayIdx] || '';
+        assignments: schedule.columns.reduce(
+          (acc, col, colIdx) => {
+            const station = schedule.grid[idx]?.[colIdx] || '';
+            col.weeks.forEach(week => {
+              acc[week.start] = station;
+            });
             return acc;
           },
           {} as Record<string, string>

@@ -23,3 +23,29 @@
     padding: var(--space-lg);
   }
 }
+
+@media print {
+  .sidebar {
+    display: none !important;
+  }
+
+  .app-main {
+    margin-left: 0 !important;
+  }
+
+  .app-content {
+    padding: 0 !important;
+    max-width: none;
+  }
+
+  .schedule-controls,
+  .schedule-stats,
+  .schedule-warnings {
+    display: none !important;
+  }
+
+  .section-title,
+  .section-subtitle {
+    display: none !important;
+  }
+}

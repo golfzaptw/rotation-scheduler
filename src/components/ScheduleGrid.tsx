@@ -15,7 +15,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
 }) => {
   const sorted = [...students].sort((a, b) => a.sortOrder - b.sortOrder);
 
-  if (schedule.workingDays.length === 0 || sorted.length === 0) {
+  if (!schedule.columns || schedule.columns.length === 0 || sorted.length === 0) {
     return null;
   }
 
@@ -26,22 +26,22 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
           <thead>
             <tr>
               <th className="schedule-th schedule-th-student">Student</th>
-              {schedule.workingDays.map((dateStr) => {
-                const date = parseISO(dateStr);
-                return (
-                  <th key={dateStr} className="schedule-th schedule-th-date">
-                    <span className="schedule-date-dow">
-                      {format(date, 'EEE')}
-                    </span>
-                    <span className="schedule-date-day">
-                      {format(date, 'dd')}
-                    </span>
-                    <span className="schedule-date-month">
-                      {format(date, 'MMM')}
-                    </span>
-                  </th>
-                );
-              })}
+              {schedule.columns.map((col, colIdx) => (
+                <th key={colIdx} className="schedule-th schedule-th-date">
+                  <div className="schedule-stacked-headers">
+                    {col.weeks.map((week, idx) => (
+                      <div key={idx} className="schedule-stacked-header-item">
+                        <span className="schedule-date-weeknum">
+                          wk{week.weekIndex + 1}
+                        </span>
+                        <span className="schedule-date-month">
+                          {week.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -53,12 +53,12 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
                   </span>
                   <span className="schedule-student-name">{student.name}</span>
                 </td>
-                {schedule.grid[studentIdx]?.map((stationName, dayIdx) => {
-                  const colorIdx = schedule.stationIndices[studentIdx][dayIdx];
+                {schedule.grid[studentIdx]?.map((stationName, weekIdx) => {
+                  const colorIdx = schedule.stationIndices[studentIdx][weekIdx];
                   const color = getStationColor(colorIdx);
                   return (
                     <td
-                      key={dayIdx}
+                      key={weekIdx}
                       className="schedule-td schedule-td-cell"
                       style={{
                         background: color.bg,

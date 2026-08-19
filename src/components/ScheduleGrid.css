@@ -3,8 +3,8 @@
   overflow: hidden;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
 }
 
 .schedule-grid-scroll {
@@ -48,29 +48,48 @@
 
 .schedule-th-date {
   text-align: center;
-  min-width: 70px;
-  padding: var(--space-sm) var(--space-sm);
+  min-width: 90px;
+  padding: 4px 6px;
+  vertical-align: top;
 }
 
-.schedule-date-dow {
-  display: block;
-  font-size: 0.65rem;
-  color: var(--text-tertiary);
-  margin-bottom: 1px;
-}
-
-.schedule-date-day {
-  display: block;
-  font-size: var(--font-size-base);
+.schedule-date-weeknum {
+  display: inline-block;
+  font-size: 0.55rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--accent-start);
+  background: rgba(124, 58, 237, 0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+  margin-bottom: 1px;
 }
 
 .schedule-date-month {
   display: block;
-  font-size: 0.65rem;
-  color: var(--text-tertiary);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-secondary);
   margin-top: 1px;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.schedule-stacked-headers {
+  display: block;
+}
+
+.schedule-stacked-header-item {
+  display: block;
+  padding: 3px 0;
+  line-height: 1.2;
+}
+
+.schedule-stacked-header-item + .schedule-stacked-header-item {
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  margin-top: 2px;
+  padding-top: 3px;
 }
 
 /* Body cells */
@@ -88,11 +107,9 @@
   background: var(--bg-secondary);
   font-weight: 500;
   white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
   min-width: 180px;
   border-right: 1px solid var(--glass-border);
+  vertical-align: middle;
 }
 
 .schedule-student-index {
@@ -106,7 +123,8 @@
   font-size: var(--font-size-xs);
   font-weight: 600;
   color: var(--text-tertiary);
-  flex-shrink: 0;
+  vertical-align: middle;
+  margin-right: 6px;
 }
 
 .schedule-student-name {
@@ -124,6 +142,7 @@
   padding: var(--space-sm) var(--space-sm);
   border-right: 1px solid rgba(255, 255, 255, 0.02);
   cursor: default;
+  vertical-align: middle;
 }
 
 .schedule-td-cell:hover {
@@ -142,4 +161,124 @@
 /* Alternating row subtle bg */
 .schedule-table tbody tr:nth-child(even) .schedule-td-student {
   background: var(--bg-elevated);
+}
+
+/* ---- Print overrides ---- */
+@page {
+  size: landscape;
+  margin: 5mm;
+}
+
+@media print {
+  .schedule-grid-wrapper {
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .schedule-grid-scroll {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .schedule-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 5pt;
+  }
+
+  .schedule-th {
+    position: static;
+    background: #f0f0f0 !important;
+    color: #000;
+    padding: 2px 1px;
+    font-size: 4.5pt;
+    letter-spacing: 0;
+    border: 0.5px solid #ccc;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .schedule-th-student {
+    position: static;
+    background: #e8e8e8 !important;
+    min-width: 0;
+    width: 60px;
+    text-align: left;
+  }
+
+  .schedule-th-date {
+    min-width: 0;
+    padding: 1px;
+  }
+
+  .schedule-date-weeknum {
+    font-size: 4pt;
+    color: #666;
+    margin-bottom: 0;
+  }
+
+  .schedule-date-month {
+    font-size: 4.5pt;
+    color: #000;
+    margin-top: 0;
+  }
+
+  .schedule-stacked-header-item {
+    padding: 1px 0;
+  }
+
+  .schedule-stacked-header-item + .schedule-stacked-header-item {
+    border-top: 0.5px solid #bbb;
+    margin-top: 1px;
+  }
+
+  .schedule-td {
+    padding: 2px 1px;
+    font-size: 5pt;
+    border: 0.5px solid #ccc;
+  }
+
+  .schedule-td-student {
+    position: static;
+    background: #fff !important;
+    min-width: 0;
+    width: 60px;
+    border-right: 0.5px solid #ccc;
+    gap: 2px;
+  }
+
+  .schedule-student-index {
+    width: 12px;
+    height: 12px;
+    font-size: 4pt;
+    background: #eee;
+  }
+
+  .schedule-student-name {
+    font-size: 5pt;
+  }
+
+  .schedule-td-cell {
+    min-width: 0;
+    padding: 2px 1px;
+    font-size: 4.5pt;
+    letter-spacing: 0;
+    border: 0.5px solid #ddd;
+  }
+
+  .schedule-cell-text {
+    max-width: none;
+    font-size: 4.5pt;
+    line-height: 1.1;
+  }
+
+  .schedule-table tbody tr:nth-child(even) .schedule-td-student {
+    background: #fafafa !important;
+  }
 }

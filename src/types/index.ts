@@ -12,26 +12,33 @@ export interface Station {
   sortOrder: number;
 }
 
-export interface Holiday {
-  date: string; // "YYYY-MM-DD"
-  label: string;
+export interface ScheduleWeek {
+  start: string; // "YYYY-MM-DD"
+  end: string; // "YYYY-MM-DD"
+  label: string; // "20-24 ต.ค."
+}
+
+export interface ScheduleColumn {
+  weeks: (ScheduleWeek & { weekIndex: number })[];
 }
 
 export interface ScheduleResult {
-  workingDays: string[]; // "YYYY-MM-DD" strings for column headers
-  grid: string[][]; // grid[studentIdx][dayIdx] = station name
-  stationIndices: number[][]; // grid[studentIdx][dayIdx] = station color index
+  columns: ScheduleColumn[];
+  grid: string[][]; // grid[studentIdx][colIdx] = station name
+  stationIndices: number[][]; // grid[studentIdx][colIdx] = station color index
+  totalWeeks: number;
+  startDate: string;
+  endDate: string;
 }
 
 export interface GenerateParams {
   students: Student[];
   stations: Station[];
-  holidays: Set<string>;
   startDate: Date;
-  numWorkingDays: number;
+  endDate: Date;
 }
 
-export type TabId = 'schedule' | 'students' | 'stations' | 'holidays';
+export type TabId = 'schedule' | 'students' | 'stations';
 
 export interface TabItem {
   id: TabId;
@@ -43,11 +50,9 @@ export const TABS: TabItem[] = [
   { id: 'schedule', label: 'Schedule', icon: '📅' },
   { id: 'students', label: 'Students', icon: '👥' },
   { id: 'stations', label: 'Stations', icon: '🏥' },
-  { id: 'holidays', label: 'Holidays', icon: '📆' },
 ];
 
 export const STORAGE_KEYS = {
   students: 'rotation_students',
   stations: 'rotation_stations',
-  holidays: 'rotation_holidays',
 } as const;

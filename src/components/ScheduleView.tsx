@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import type { Student, Station, ScheduleResult } from '../types';
 import { generateSchedule } from '../utils/scheduler';
 import { ScheduleGrid } from './ScheduleGrid';
@@ -9,21 +9,21 @@ import './ScheduleView.css';
 interface ScheduleViewProps {
   students: Student[];
   stations: Station[];
-  holidaySet: Set<string>;
 }
 
 export const ScheduleView: React.FC<ScheduleViewProps> = ({
   students,
   stations,
-  holidaySet,
 }) => {
   const [startDate, setStartDate] = useState(() =>
     format(new Date(), 'yyyy-MM-dd')
   );
-  const [numDays, setNumDays] = useState(20);
+  const [endDate, setEndDate] = useState(() =>
+    format(addDays(new Date(), 28), 'yyyy-MM-dd')
+  );
   const [schedule, setSchedule] = useState<ScheduleResult | null>(null);
 
-  const canGenerate = students.length > 0 && stations.length > 0 && numDays > 0;
+  const canGenerate = students.length > 0 && stations.length > 0 && new Date(startDate) <= new Date(endDate);
 
   const handleGenerate = () => {
     if (!canGenerate) return;
@@ -31,9 +31,8 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
     const result = generateSchedule({
       students,
       stations,
-      holidays: holidaySet,
       startDate: new Date(startDate + 'T00:00:00'),
-      numWorkingDays: numDays,
+      endDate: new Date(endDate + 'T00:00:00'),
     });
 
     setSchedule(result);
@@ -58,7 +57,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
       <h2 className="section-title">Rotation Schedule</h2>
       <p className="section-subtitle">
         Generate a round-robin clinical rotation schedule. Each student advances
-        one station per working day.
+        one station per week.
       </p>
 
       {/* Controls */}
@@ -76,39 +75,18 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
           />
         </div>
 
-        <div className="schedule-control-group schedule-control-days">
-          <label className="schedule-label">
-            Working Days: <strong>{numDays}</strong>
+        <div className="schedule-control-group">
+          <label className="schedule-label" htmlFor="schedule-end-date">
+            End Date
           </label>
-          <div className="schedule-presets">
-            {[
-              { label: '1 สัปดาห์', days: 5 },
-              { label: '2 สัปดาห์', days: 10 },
-              { label: '1 เดือน', days: 22 },
-              { label: '2 เดือน', days: 44 },
-              { label: '3 เดือน', days: 66 },
-            ].map((preset) => (
-              <button
-                key={preset.days}
-                className={`schedule-preset-chip ${numDays === preset.days ? 'active' : ''}`}
-                onClick={() => setNumDays(preset.days)}
-              >
-                {preset.label}
-              </button>
-            ))}
-            <div className="schedule-custom-input">
-              <span className="schedule-custom-label">กำหนดเอง:</span>
-              <input
-                id="schedule-num-days"
-                className="input schedule-num-input"
-                type="number"
-                min={1}
-                max={365}
-                value={numDays}
-                onChange={(e) => setNumDays(Math.max(1, Number(e.target.value)))}
-              />
-            </div>
-          </div>
+          <input
+            id="schedule-end-date"
+            className="input"
+            type="date"
+            min={startDate}
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
         </div>
 
         <div className="schedule-control-actions">
@@ -163,13 +141,10 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
             <span className="schedule-stat-label">Stations</span>
           </div>
           <div className="schedule-stat">
-            <span className="schedule-stat-value">{schedule.workingDays.length}</span>
-            <span className="schedule-stat-label">Working Days</span>
+            <span className="schedule-stat-value">{schedule.totalWeeks}</span>
+            <span className="schedule-stat-label">Weeks</span>
           </div>
-          <div className="schedule-stat">
-            <span className="schedule-stat-value">{holidaySet.size}</span>
-            <span className="schedule-stat-label">Holidays</span>
-          </div>
+
         </div>
       )}
 
@@ -181,25 +156,21 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
             <h1 className="print-title">Clinical Rotation Schedule</h1>
             <div className="print-meta">
               <span>
-                {format(parseISO(schedule.workingDays[0]), 'dd MMM yyyy')}
+                {schedule.startDate ? format(parseISO(schedule.startDate), 'dd MMM yyyy') : ''}
                 {' — '}
-                {format(
-                  parseISO(schedule.workingDays[schedule.workingDays.length - 1]),
-                  'dd MMM yyyy'
-                )}
+                {schedule.endDate ? format(parseISO(schedule.endDate), 'dd MMM yyyy') : ''}
               </span>
               <span>•</span>
               <span>{sortedStudents.length} Students</span>
               <span>•</span>
               <span>{stations.length} Stations</span>
               <span>•</span>
-              <span>{schedule.workingDays.length} Working Days</span>
+              <span>{schedule.totalWeeks} Weeks</span>
+              <span>•</span>
+              <span>Generated on {format(new Date(), 'dd MMM yyyy, HH:mm')}</span>
             </div>
           </div>
           <ScheduleGrid students={sortedStudents} schedule={schedule} />
-          <div className="print-footer">
-            Generated on {format(new Date(), 'dd MMM yyyy, HH:mm')}
-          </div>
         </div>
       )}
     </div>

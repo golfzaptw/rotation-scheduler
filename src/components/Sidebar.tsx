@@ -7,7 +7,6 @@ interface SidebarProps {
   onTabChange: (tab: TabId) => void;
   studentCount: number;
   stationCount: number;
-  holidayCount: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -15,13 +14,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
   studentCount,
   stationCount,
-  holidayCount,
 }) => {
   const getCounts = (id: TabId): number | null => {
     switch (id) {
       case 'students': return studentCount;
       case 'stations': return stationCount;
-      case 'holidays': return holidayCount;
       default: return null;
     }
   };

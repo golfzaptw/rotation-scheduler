@@ -1,4 +1,4 @@
-import { STORAGE_KEYS, type Student, type Station, type Holiday } from '../types';
+import { STORAGE_KEYS, type Student, type Station } from '../types';
 
 /* ---- Generic localStorage helpers ---- */
 
@@ -85,12 +85,4 @@ export function loadStations(): Station[] {
 
 export function saveStations(stations: Station[]): void {
   saveToStorage(STORAGE_KEYS.stations, stations);
-}
-
-export function loadHolidays(): Holiday[] {
-  return loadFromStorage<Holiday[]>(STORAGE_KEYS.holidays, []);
-}
-
-export function saveHolidays(holidays: Holiday[]): void {
-  saveToStorage(STORAGE_KEYS.holidays, holidays);
 }

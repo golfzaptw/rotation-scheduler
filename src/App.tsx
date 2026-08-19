@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import type { TabId } from './types';
 import { useStudents } from './hooks/useStudents';
 import { useStations } from './hooks/useStations';
-import { useHolidays } from './hooks/useHolidays';
 import { Sidebar } from './components/Sidebar';
 import { ScheduleView } from './components/ScheduleView';
 import { StudentManager } from './components/StudentManager';
 import { StationManager } from './components/StationManager';
-import { HolidayPicker } from './components/HolidayPicker';
 import './App.css';
 
 const App: React.FC = () => {
@@ -31,13 +29,7 @@ const App: React.FC = () => {
     clearStations,
   } = useStations();
 
-  const {
-    holidays,
-    holidaySet,
-    toggleHoliday,
-    removeHoliday,
-    updateHolidayLabel,
-  } = useHolidays();
+
 
   const renderContent = () => {
     switch (activeTab) {
@@ -46,7 +38,6 @@ const App: React.FC = () => {
           <ScheduleView
             students={students}
             stations={stations}
-            holidaySet={holidaySet}
           />
         );
       case 'students':
@@ -71,15 +62,7 @@ const App: React.FC = () => {
             onClearAll={clearStations}
           />
         );
-      case 'holidays':
-        return (
-          <HolidayPicker
-            holidays={holidays}
-            onToggle={toggleHoliday}
-            onRemove={removeHoliday}
-            onUpdateLabel={updateHolidayLabel}
-          />
-        );
+
     }
   };
 
@@ -90,7 +73,6 @@ const App: React.FC = () => {
         onTabChange={setActiveTab}
         studentCount={students.length}
         stationCount={stations.length}
-        holidayCount={holidays.length}
       />
       <main className="app-main">
         <div className="app-content">{renderContent()}</div>

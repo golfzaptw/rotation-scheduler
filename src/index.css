@@ -553,6 +553,7 @@ body::before {
   /* ---- TABLE: fixed layout forces equal compact columns ---- */
   .schedule-table {
     width: 100% !important;
+    height: 85vh !important; /* Force table to stretch vertically, safely within 1 page */
     min-width: unset !important;
     border-collapse: collapse !important;
     table-layout: fixed !important;
@@ -568,8 +569,9 @@ body::before {
     font-size: 5.5pt !important;
     text-align: center !important;
     letter-spacing: 0 !important;
-    overflow: hidden !important;
-    word-break: break-all !important;
+    overflow: visible !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
     line-height: 1.2 !important;
   }
 
@@ -579,8 +581,8 @@ body::before {
     background: #ddd !important;
     min-width: unset !important;
     width: 70px !important;
-    text-align: left !important;
-    padding-left: 3px !important;
+    text-align: center !important;
+    padding: 1px 2px !important;
     font-size: 6pt !important;
   }
 
@@ -609,6 +611,7 @@ body::before {
     color: #555 !important;
     line-height: 1.1 !important;
     margin-top: 0 !important;
+    white-space: normal !important;
   }
 
   /* ---- BODY CELLS ---- */

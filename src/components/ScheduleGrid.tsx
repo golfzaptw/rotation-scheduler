@@ -25,7 +25,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
         <table className="schedule-table">
           <thead>
             <tr>
-              <th className="schedule-th schedule-th-student">Student</th>
+              <th className="schedule-th schedule-th-student" style={{ textAlign: 'center' }}>ชื่อนักเรียน</th>
               {schedule.columns.map((col, colIdx) => (
                 <th key={colIdx} className="schedule-th schedule-th-date">
                   <div className="schedule-stacked-headers">

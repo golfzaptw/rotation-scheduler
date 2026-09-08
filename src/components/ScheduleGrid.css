@@ -177,15 +177,20 @@
     background: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+    height: 98vh; /* Force wrapper to fill page */
+    display: flex;
+    flex-direction: column;
   }
 
   .schedule-grid-scroll {
     overflow: visible;
     max-height: none;
+    flex: 1;
   }
 
   .schedule-table {
     width: 100%;
+    height: 100%; /* Stretch to fill wrapper */
     min-width: 0;
     table-layout: fixed;
     border-collapse: collapse;

@@ -26,6 +26,7 @@ const App: React.FC = () => {
     updateStation,
     removeStation,
     reorderStations,
+    bulkAddStations,
     clearStations,
   } = useStations();
 
@@ -59,6 +60,7 @@ const App: React.FC = () => {
             onUpdate={updateStation}
             onRemove={removeStation}
             onReorder={reorderStations}
+            onBulkAdd={bulkAddStations}
             onClearAll={clearStations}
           />
         );

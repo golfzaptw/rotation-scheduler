@@ -62,9 +62,36 @@ export function useStations() {
     [stations, persist]
   );
 
+  const bulkAddStations = useCallback(
+    (names: string[]) => {
+      const existingNames = new Set(stations.map((s) => s.name.toLowerCase()));
+      const newStations: Station[] = [];
+      let order = stations.length;
+
+      for (const raw of names) {
+        const name = raw.trim();
+        if (!name) continue;
+        if (existingNames.has(name.toLowerCase())) continue;
+        existingNames.add(name.toLowerCase());
+        newStations.push({
+          id: crypto.randomUUID(),
+          name,
+          sortOrder: order++,
+        });
+      }
+
+      if (newStations.length > 0) {
+        persist([...stations, ...newStations]);
+      }
+
+      return newStations.length;
+    },
+    [stations, persist]
+  );
+
   const clearStations = useCallback(() => {
     persist([]);
   }, [persist]);
 
-  return { stations, addStation, updateStation, removeStation, reorderStations, clearStations };
+  return { stations, addStation, updateStation, removeStation, reorderStations, bulkAddStations, clearStations };
 }

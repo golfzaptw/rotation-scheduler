@@ -153,7 +153,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
         <div id="printable-schedule">
           {/* Print-only header */}
           <div className="print-header">
-            <h1 className="print-title">Clinical Rotation Schedule</h1>
+            <h1 className="print-title">ตารางปฏิบัติงานรายสัปดาห์ของ นร.วิสัญญีพยาบาล รุ่นที่ 43</h1>
             <div className="print-meta">
               <span>
                 {schedule.startDate ? format(parseISO(schedule.startDate), 'dd MMM yyyy') : ''}
@@ -166,8 +166,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
               <span>{stations.length} Stations</span>
               <span>•</span>
               <span>{schedule.totalWeeks} Weeks</span>
-              <span>•</span>
-              <span>Generated on {format(new Date(), 'dd MMM yyyy, HH:mm')}</span>
             </div>
           </div>
           <ScheduleGrid students={sortedStudents} schedule={schedule} />

@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import type { Station } from '../types';
 import { getStationColor } from '../utils/colors';
+import { parseFileContent } from '../utils/fileParser';
 import './StationManager.css';
 
 interface StationManagerProps {
@@ -9,6 +10,7 @@ interface StationManagerProps {
   onUpdate: (id: string, name: string) => void;
   onRemove: (id: string) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
+  onBulkAdd: (names: string[]) => number;
   onClearAll: () => void;
 }
 
@@ -18,6 +20,7 @@ export const StationManager: React.FC<StationManagerProps> = ({
   onUpdate,
   onRemove,
   onReorder,
+  onBulkAdd,
   onClearAll,
 }) => {
   const [newName, setNewName] = useState('');
@@ -25,7 +28,10 @@ export const StationManager: React.FC<StationManagerProps> = ({
   const [editValue, setEditValue] = useState('');
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{ count: number; fileName: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAdd = () => {
     if (newName.trim()) {
@@ -60,7 +66,53 @@ export const StationManager: React.FC<StationManagerProps> = ({
     }
   };
 
-  // Drag & Drop
+  // --- File upload logic ---
+  const processFile = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        if (!content) return;
+
+        const names = parseFileContent(content, file.name);
+        const added = onBulkAdd(names);
+
+        setUploadResult({ count: added, fileName: file.name });
+        setTimeout(() => setUploadResult(null), 4000);
+      };
+      reader.readAsText(file);
+    },
+    [onBulkAdd]
+  );
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+    e.target.value = '';
+  };
+
+  const handleDragOverUpload = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeaveUpload = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDropUpload = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  };
+
+  // Drag & Drop (for list items)
   const handleDragStart = (index: number) => {
     setDragIndex(index);
   };
@@ -129,6 +181,56 @@ export const StationManager: React.FC<StationManagerProps> = ({
         >
           Clear All
         </button>
+      </div>
+
+      {/* File upload zone */}
+      <div
+        className={`upload-zone glass-card ${isDragOver ? 'upload-zone-active' : ''}`}
+        onDragOver={handleDragOverUpload}
+        onDragLeave={handleDragLeaveUpload}
+        onDrop={handleDropUpload}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,.txt,.tsv"
+          className="upload-input-hidden"
+          onChange={handleFileChange}
+        />
+        <div className="upload-zone-content">
+          <div className="upload-icon">{isDragOver ? '📥' : '📄'}</div>
+          <div className="upload-text">
+            <span className="upload-text-main">
+              {isDragOver ? 'Drop file here' : 'Upload station list'}
+            </span>
+            <span className="upload-text-sub">
+              Drag & drop or click — supports .csv, .txt (one name per line)
+            </span>
+          </div>
+          <button
+            className="btn btn-secondary upload-browse-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              fileInputRef.current?.click();
+            }}
+          >
+            Browse
+          </button>
+        </div>
+
+        {/* Upload result toast */}
+        {uploadResult && (
+          <div className="upload-result animate-fade-in">
+            <span className="upload-result-icon">✅</span>
+            <span>
+              Added <strong>{uploadResult.count}</strong> station
+              {uploadResult.count !== 1 ? 's' : ''} from{' '}
+              <strong>{uploadResult.fileName}</strong>
+              {uploadResult.count === 0 && ' (all names already exist)'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Station list */}

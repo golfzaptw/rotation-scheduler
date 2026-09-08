@@ -13,6 +13,7 @@ const App: React.FC = () => {
 
   const {
     students,
+    loading: studentsLoading,
     addStudent,
     updateStudent,
     removeStudent,
@@ -22,6 +23,7 @@ const App: React.FC = () => {
 
   const {
     stations,
+    loading: stationsLoading,
     addStation,
     updateStation,
     removeStation,
@@ -67,6 +69,17 @@ const App: React.FC = () => {
 
     }
   };
+
+  if (studentsLoading || stationsLoading) {
+    return (
+      <div className="app-layout" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <h2>Loading data...</h2>
+          <p>Connecting to Firebase Firestore</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-layout">

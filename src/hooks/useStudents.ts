@@ -1,65 +1,110 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 import type { Student } from '../types';
-import { loadStudents, saveStudents } from '../utils/storage';
 
 export function useStudents() {
-  const [students, setStudents] = useState<Student[]>(() => loadStudents());
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const persist = useCallback((next: Student[]) => {
-    setStudents(next);
-    saveStudents(next);
+  useEffect(() => {
+    const studentsRef = collection(db, 'students');
+    const unsubscribe = onSnapshot(studentsRef, (snapshot) => {
+      const data: Student[] = [];
+      snapshot.forEach((doc) => {
+        data.push(doc.data() as Student);
+      });
+      // Sort by sortOrder
+      data.sort((a, b) => a.sortOrder - b.sortOrder);
+      setStudents(data);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching students:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const addStudent = useCallback(
-    (name: string) => {
+    async (name: string) => {
       const trimmed = name.trim();
       if (!trimmed) return;
 
-      const next: Student[] = [
-        ...students,
-        {
-          id: crypto.randomUUID(),
-          name: trimmed,
-          sortOrder: students.length,
-        },
-      ];
-      persist(next);
+      const id = crypto.randomUUID();
+      const newStudent: Student = {
+        id,
+        name: trimmed,
+        sortOrder: students.length,
+      };
+
+      try {
+        await setDoc(doc(db, 'students', id), newStudent);
+      } catch (e) {
+        console.error("Error adding student:", e);
+      }
     },
-    [students, persist]
+    [students]
   );
 
   const updateStudent = useCallback(
-    (id: string, name: string) => {
+    async (id: string, name: string) => {
       const trimmed = name.trim();
       if (!trimmed) return;
 
-      const next = students.map((s) =>
-        s.id === id ? { ...s, name: trimmed } : s
-      );
-      persist(next);
+      try {
+        await setDoc(doc(db, 'students', id), { name: trimmed }, { merge: true });
+      } catch (e) {
+        console.error("Error updating student:", e);
+      }
     },
-    [students, persist]
+    []
   );
 
   const removeStudent = useCallback(
-    (id: string) => {
-      const next = students
-        .filter((s) => s.id !== id)
-        .map((s, i) => ({ ...s, sortOrder: i }));
-      persist(next);
+    async (id: string) => {
+      try {
+        // We also need to reorder the remaining students to prevent gaps,
+        // but for simplicity and performance, we can just delete. 
+        // If strict ordering is required without gaps, we'd batch update here.
+        // Let's do a batch update to maintain sortOrder just like the original code.
+        const next = students
+          .filter((s) => s.id !== id)
+          .map((s, i) => ({ ...s, sortOrder: i }));
+          
+        const batch = writeBatch(db);
+        batch.delete(doc(db, 'students', id));
+        
+        next.forEach((s) => {
+          batch.update(doc(db, 'students', s.id), { sortOrder: s.sortOrder });
+        });
+        
+        await batch.commit();
+      } catch (e) {
+        console.error("Error removing student:", e);
+      }
     },
-    [students, persist]
+    [students]
   );
 
   const reorderStudents = useCallback(
-    (fromIndex: number, toIndex: number) => {
+    async (fromIndex: number, toIndex: number) => {
       const next = [...students];
       const [moved] = next.splice(fromIndex, 1);
       next.splice(toIndex, 0, moved);
       const reordered = next.map((s, i) => ({ ...s, sortOrder: i }));
-      persist(reordered);
+      
+      try {
+        const batch = writeBatch(db);
+        reordered.forEach((s) => {
+          batch.update(doc(db, 'students', s.id), { sortOrder: s.sortOrder });
+        });
+        await batch.commit();
+      } catch (e) {
+        console.error("Error reordering students:", e);
+      }
     },
-    [students, persist]
+    [students]
   );
 
   const bulkAddStudents = useCallback(
@@ -81,17 +126,33 @@ export function useStudents() {
       }
 
       if (newStudents.length > 0) {
-        persist([...students, ...newStudents]);
+        try {
+          const batch = writeBatch(db);
+          newStudents.forEach((s) => {
+            batch.set(doc(db, 'students', s.id), s);
+          });
+          batch.commit();
+        } catch (e) {
+          console.error("Error bulk adding students:", e);
+        }
       }
 
       return newStudents.length;
     },
-    [students, persist]
+    [students]
   );
 
-  const clearStudents = useCallback(() => {
-    persist([]);
-  }, [persist]);
+  const clearStudents = useCallback(async () => {
+    try {
+      const batch = writeBatch(db);
+      students.forEach((s) => {
+        batch.delete(doc(db, 'students', s.id));
+      });
+      await batch.commit();
+    } catch (e) {
+      console.error("Error clearing students:", e);
+    }
+  }, [students]);
 
-  return { students, addStudent, updateStudent, removeStudent, reorderStudents, bulkAddStudents, clearStudents };
+  return { students, loading, addStudent, updateStudent, removeStudent, reorderStudents, bulkAddStudents, clearStudents };
 }

@@ -1,65 +1,106 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 import type { Station } from '../types';
-import { loadStations, saveStations } from '../utils/storage';
 
 export function useStations() {
-  const [stations, setStations] = useState<Station[]>(() => loadStations());
+  const [stations, setStations] = useState<Station[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const persist = useCallback((next: Station[]) => {
-    setStations(next);
-    saveStations(next);
+  useEffect(() => {
+    const stationsRef = collection(db, 'stations');
+    const unsubscribe = onSnapshot(stationsRef, (snapshot) => {
+      const data: Station[] = [];
+      snapshot.forEach((doc) => {
+        data.push(doc.data() as Station);
+      });
+      // Sort by sortOrder
+      data.sort((a, b) => a.sortOrder - b.sortOrder);
+      setStations(data);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching stations:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const addStation = useCallback(
-    (name: string) => {
+    async (name: string) => {
       const trimmed = name.trim();
       if (!trimmed) return;
 
-      const next: Station[] = [
-        ...stations,
-        {
-          id: crypto.randomUUID(),
-          name: trimmed,
-          sortOrder: stations.length,
-        },
-      ];
-      persist(next);
+      const id = crypto.randomUUID();
+      const newStation: Station = {
+        id,
+        name: trimmed,
+        sortOrder: stations.length,
+      };
+
+      try {
+        await setDoc(doc(db, 'stations', id), newStation);
+      } catch (e) {
+        console.error("Error adding station:", e);
+      }
     },
-    [stations, persist]
+    [stations]
   );
 
   const updateStation = useCallback(
-    (id: string, name: string) => {
+    async (id: string, name: string) => {
       const trimmed = name.trim();
       if (!trimmed) return;
 
-      const next = stations.map((s) =>
-        s.id === id ? { ...s, name: trimmed } : s
-      );
-      persist(next);
+      try {
+        await setDoc(doc(db, 'stations', id), { name: trimmed }, { merge: true });
+      } catch (e) {
+        console.error("Error updating station:", e);
+      }
     },
-    [stations, persist]
+    []
   );
 
   const removeStation = useCallback(
-    (id: string) => {
-      const next = stations
-        .filter((s) => s.id !== id)
-        .map((s, i) => ({ ...s, sortOrder: i }));
-      persist(next);
+    async (id: string) => {
+      try {
+        const next = stations
+          .filter((s) => s.id !== id)
+          .map((s, i) => ({ ...s, sortOrder: i }));
+          
+        const batch = writeBatch(db);
+        batch.delete(doc(db, 'stations', id));
+        
+        next.forEach((s) => {
+          batch.update(doc(db, 'stations', s.id), { sortOrder: s.sortOrder });
+        });
+        
+        await batch.commit();
+      } catch (e) {
+        console.error("Error removing station:", e);
+      }
     },
-    [stations, persist]
+    [stations]
   );
 
   const reorderStations = useCallback(
-    (fromIndex: number, toIndex: number) => {
+    async (fromIndex: number, toIndex: number) => {
       const next = [...stations];
       const [moved] = next.splice(fromIndex, 1);
       next.splice(toIndex, 0, moved);
       const reordered = next.map((s, i) => ({ ...s, sortOrder: i }));
-      persist(reordered);
+      
+      try {
+        const batch = writeBatch(db);
+        reordered.forEach((s) => {
+          batch.update(doc(db, 'stations', s.id), { sortOrder: s.sortOrder });
+        });
+        await batch.commit();
+      } catch (e) {
+        console.error("Error reordering stations:", e);
+      }
     },
-    [stations, persist]
+    [stations]
   );
 
   const bulkAddStations = useCallback(
@@ -81,17 +122,33 @@ export function useStations() {
       }
 
       if (newStations.length > 0) {
-        persist([...stations, ...newStations]);
+        try {
+          const batch = writeBatch(db);
+          newStations.forEach((s) => {
+            batch.set(doc(db, 'stations', s.id), s);
+          });
+          batch.commit();
+        } catch (e) {
+          console.error("Error bulk adding stations:", e);
+        }
       }
 
       return newStations.length;
     },
-    [stations, persist]
+    [stations]
   );
 
-  const clearStations = useCallback(() => {
-    persist([]);
-  }, [persist]);
+  const clearStations = useCallback(async () => {
+    try {
+      const batch = writeBatch(db);
+      stations.forEach((s) => {
+        batch.delete(doc(db, 'stations', s.id));
+      });
+      await batch.commit();
+    } catch (e) {
+      console.error("Error clearing stations:", e);
+    }
+  }, [stations]);
 
-  return { stations, addStation, updateStation, removeStation, reorderStations, bulkAddStations, clearStations };
+  return { stations, loading, addStation, updateStation, removeStation, reorderStations, bulkAddStations, clearStations };
 }

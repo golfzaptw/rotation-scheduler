@@ -6,6 +6,7 @@ import { Sidebar } from './components/Sidebar';
 import { ScheduleView } from './components/ScheduleView';
 import { StudentManager } from './components/StudentManager';
 import { StationManager } from './components/StationManager';
+import { DutyScheduleView } from './components/DutyScheduleView';
 import './App.css';
 
 const App: React.FC = () => {
@@ -66,7 +67,8 @@ const App: React.FC = () => {
             onClearAll={clearStations}
           />
         );
-
+      case 'duty':
+        return <DutyScheduleView students={students} />;
     }
   };
 

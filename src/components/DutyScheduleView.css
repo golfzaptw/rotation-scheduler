@@ -1,0 +1,367 @@
+.duty-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Controls */
+.duty-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1.25rem;
+}
+
+.duty-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.duty-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.duty-control-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+/* Calendar */
+.duty-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.duty-month-block {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.duty-month-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  color: #fff;
+  margin: 0;
+}
+
+.duty-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.duty-grid-header {
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.duty-grid-header.weekend-header {
+  color: #f59e0b;
+}
+
+.duty-cell {
+  min-height: 80px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background 0.2s;
+  position: relative;
+}
+
+.duty-cell:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.duty-cell.empty {
+  background: transparent;
+  min-height: 0;
+}
+
+.duty-cell.weekend {
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.duty-cell.weekend:hover {
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.duty-date-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 0.15rem;
+}
+
+.duty-cell.weekend .duty-date-num {
+  color: #f59e0b;
+}
+
+.duty-student-chip {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.15);
+  color: rgba(165, 180, 252, 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.duty-cell.weekend .duty-student-chip {
+  background: rgba(245, 158, 11, 0.15);
+  color: rgba(253, 224, 71, 0.95);
+}
+
+/* Stats */
+.duty-stats-section {
+  padding: 1.25rem;
+}
+
+.duty-stats-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: var(--text-primary);
+}
+
+.duty-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.duty-stats-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.duty-stats-table td {
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.duty-stats-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.duty-stats-table .stat-num {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.duty-stats-table .stat-weekend {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.duty-stats-table .stat-weekday {
+  color: #818cf8;
+  font-weight: 600;
+}
+
+.duty-stats-table .stat-total {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Warnings */
+.duty-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.duty-warning {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  font-size: 0.85rem;
+}
+
+/* Summary stat cards */
+.duty-summary {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.duty-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 80px;
+}
+
+.duty-summary-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.duty-summary-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.15rem;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .duty-controls,
+  .duty-control-actions,
+  .sidebar,
+  .duty-warnings {
+    display: none !important;
+  }
+
+  .duty-calendar {
+    display: block;
+  }
+
+  /* 1 Month per page */
+  .duty-month-block {
+    page-break-after: always;
+    break-after: page;
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 0 !important;
+  }
+
+  .duty-month-title {
+    background: #4f46e5 !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .duty-grid-header {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border-bottom: 2px solid #d1d5db;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .duty-grid-header.weekend-header {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+  }
+
+  .duty-cell {
+    border: 1px solid #e5e7eb !important;
+    min-height: 80px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .duty-cell.weekend {
+    background: #fffbeb !important;
+  }
+
+  /* Pastel chips for print */
+  .duty-student-chip {
+    background: #e0e7ff !important;
+    color: #312e81 !important;
+    border: 1px solid #c7d2fe;
+    font-weight: 600;
+  }
+  
+  .duty-cell.weekend .duty-student-chip {
+    background: #ffedd5 !important;
+    color: #9a3412 !important;
+    border: 1px solid #fed7aa;
+  }
+
+  /* Stats table on its own page */
+  .duty-stats-section {
+    page-break-before: always;
+    break-before: page;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  .duty-stats-title {
+    color: black !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .duty-stats-table {
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .duty-stats-table th {
+    background: #f3f4f6 !important;
+    color: black !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.15rem 0.25rem !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .duty-stats-table td {
+    border: 1px solid #d1d5db !important;
+    color: black !important;
+    padding: 0.15rem 0.25rem !important;
+  }
+
+  .duty-stats-table .stat-weekday {
+    color: #312e81 !important;
+  }
+
+  .duty-stats-table .stat-weekend {
+    color: #9a3412 !important;
+  }
+
+  .duty-stats-table .stat-total {
+    color: black !important;
+  }
+}

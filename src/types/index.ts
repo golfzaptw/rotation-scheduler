@@ -38,7 +38,32 @@ export interface GenerateParams {
   endDate: Date;
 }
 
-export type TabId = 'schedule' | 'students' | 'stations';
+/* ---- Duty Schedule Types ---- */
+
+export interface DutyDay {
+  date: string;        // "YYYY-MM-DD"
+  dayOfWeek: number;   // 0=Sun, 1=Mon, ..., 6=Sat
+  isWeekend: boolean;
+  assignedStudents: string[]; // 3 student names
+}
+
+export interface DutyStats {
+  studentName: string;
+  /** perDay[0]=Sun, perDay[1]=Mon, ..., perDay[6]=Sat */
+  perDay: [number, number, number, number, number, number, number];
+  totalCount: number;
+}
+
+export interface DutyScheduleResult {
+  days: DutyDay[];
+  stats: DutyStats[];
+  startDate: string;
+  endDate: string;
+}
+
+/* ---- Tabs ---- */
+
+export type TabId = 'schedule' | 'students' | 'stations' | 'duty';
 
 export interface TabItem {
   id: TabId;
@@ -50,6 +75,7 @@ export const TABS: TabItem[] = [
   { id: 'schedule', label: 'Schedule', icon: '📅' },
   { id: 'students', label: 'Students', icon: '👥' },
   { id: 'stations', label: 'Stations', icon: '🏥' },
+  { id: 'duty', label: 'Duty', icon: '🩺' },
 ];
 
 export const STORAGE_KEYS = {

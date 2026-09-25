@@ -73,6 +73,16 @@ service cloud.firestore {
     }
 
     // ==========================================
+    // กฎสำหรับแอพ Pain Score Assessment
+    // ==========================================
+
+    // สำหรับ Collection: pain_scores (ข้อมูลประเมิน Pain Score)
+    match /pain_scores/{scoreId} {
+      allow create: if true;                     // Evaluator ส่ง form ได้ (public, no login)
+      allow read, update, delete: if isAdmin();  // Admin ดู/แก้/ลบ records
+    }
+
+    // ==========================================
     // กฎสำหรับแอพ Staff Vote (ทำงานร่วมกับโปรเจกต์เดิม)
     // ==========================================
 
@@ -90,6 +100,12 @@ service cloud.firestore {
     match /votes/{voteId} {
       allow create: if true; // ให้ทุกคนส่งโหวตได้ (Anonymous voting)
       allow read, update, delete: if isAdmin(); // เฉพาะแอดมินที่ดึงข้อมูลผลโหวตไปดูที่ Dashboard ได้
+    }
+
+    // สำหรับ Collection: categories (หมวดหมู่รางวัล)
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if true; // allow for initial seeding, can change to isAdmin() later
     }
   }
 }

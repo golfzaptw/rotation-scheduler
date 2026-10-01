@@ -55,11 +55,16 @@
   margin: 0;
 }
 
+.duty-grid-wrapper {
+  overflow-x: auto;
+}
+
 .duty-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
   background: rgba(255, 255, 255, 0.05);
+  min-width: 600px;
 }
 
 .duty-grid-header {

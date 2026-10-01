@@ -181,34 +181,36 @@ export const DutyScheduleView: React.FC<DutyScheduleViewProps> = ({ students }) 
             {calendar.map((month, mi) => (
               <div key={mi} className="duty-month-block glass-card">
                 <h3 className="duty-month-title">{month.label}</h3>
-                <div className="duty-grid">
-                  {/* Header row */}
-                  {DAY_HEADERS.map((h, hi) => (
-                    <div key={hi} className={`duty-grid-header ${h.weekend ? 'weekend-header' : ''}`}>
-                      {h.label}
-                    </div>
-                  ))}
-                  {/* Week rows */}
-                  {month.weeks.map((week, wi) =>
-                    week.map((day, di) => {
-                      if (!day) {
-                        return <div key={`${wi}-${di}`} className="duty-cell empty" />;
-                      }
-                      return (
-                        <div
-                          key={day.date}
-                          className={`duty-cell ${day.isWeekend ? 'weekend' : ''}`}
-                        >
-                          <span className="duty-date-num">
-                            {parseInt(day.date.split('-')[2], 10)}
-                          </span>
-                          {day.assignedStudents.map((name, ni) => (
-                            <span key={ni} className="duty-student-chip">{name}</span>
-                          ))}
-                        </div>
-                      );
-                    })
-                  )}
+                <div className="duty-grid-wrapper">
+                  <div className="duty-grid">
+                    {/* Header row */}
+                    {DAY_HEADERS.map((h, hi) => (
+                      <div key={hi} className={`duty-grid-header ${h.weekend ? 'weekend-header' : ''}`}>
+                        {h.label}
+                      </div>
+                    ))}
+                    {/* Week rows */}
+                    {month.weeks.map((week, wi) =>
+                      week.map((day, di) => {
+                        if (!day) {
+                          return <div key={`${wi}-${di}`} className="duty-cell empty" />;
+                        }
+                        return (
+                          <div
+                            key={day.date}
+                            className={`duty-cell ${day.isWeekend ? 'weekend' : ''}`}
+                          >
+                            <span className="duty-date-num">
+                              {parseInt(day.date.split('-')[2], 10)}
+                            </span>
+                            {day.assignedStudents.map((name, ni) => (
+                              <span key={ni} className="duty-student-chip">{name}</span>
+                            ))}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -217,36 +219,38 @@ export const DutyScheduleView: React.FC<DutyScheduleViewProps> = ({ students }) 
           {/* Stats table */}
           <div className="duty-stats-section glass-card" style={{ marginTop: '1.5rem' }}>
             <h3 className="duty-stats-title">📊 สรุปจำนวนเวรต่อคน</h3>
-            <table className="duty-stats-table">
-              <thead>
-                <tr>
-                  <th>ชื่อ</th>
-                  <th className="stat-num stat-weekend">อา.</th>
-                  <th className="stat-num">จ.</th>
-                  <th className="stat-num">อ.</th>
-                  <th className="stat-num">พ.</th>
-                  <th className="stat-num">พฤ.</th>
-                  <th className="stat-num">ศ.</th>
-                  <th className="stat-num stat-weekend">ส.</th>
-                  <th className="stat-num">รวม</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.stats.map((s) => (
-                  <tr key={s.studentName}>
-                    <td>{s.studentName}</td>
-                    <td className="stat-num stat-weekend">{s.perDay[0]}</td>
-                    <td className="stat-num stat-weekday">{s.perDay[1]}</td>
-                    <td className="stat-num stat-weekday">{s.perDay[2]}</td>
-                    <td className="stat-num stat-weekday">{s.perDay[3]}</td>
-                    <td className="stat-num stat-weekday">{s.perDay[4]}</td>
-                    <td className="stat-num stat-weekday">{s.perDay[5]}</td>
-                    <td className="stat-num stat-weekend">{s.perDay[6]}</td>
-                    <td className="stat-num stat-total">{s.totalCount}</td>
+            <div className="duty-grid-wrapper">
+              <table className="duty-stats-table">
+                <thead>
+                  <tr>
+                    <th>ชื่อ</th>
+                    <th className="stat-num stat-weekend">อา.</th>
+                    <th className="stat-num">จ.</th>
+                    <th className="stat-num">อ.</th>
+                    <th className="stat-num">พ.</th>
+                    <th className="stat-num">พฤ.</th>
+                    <th className="stat-num">ศ.</th>
+                    <th className="stat-num stat-weekend">ส.</th>
+                    <th className="stat-num">รวม</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {result.stats.map((s) => (
+                    <tr key={s.studentName}>
+                      <td>{s.studentName}</td>
+                      <td className="stat-num stat-weekend">{s.perDay[0]}</td>
+                      <td className="stat-num stat-weekday">{s.perDay[1]}</td>
+                      <td className="stat-num stat-weekday">{s.perDay[2]}</td>
+                      <td className="stat-num stat-weekday">{s.perDay[3]}</td>
+                      <td className="stat-num stat-weekday">{s.perDay[4]}</td>
+                      <td className="stat-num stat-weekday">{s.perDay[5]}</td>
+                      <td className="stat-num stat-weekend">{s.perDay[6]}</td>
+                      <td className="stat-num stat-total">{s.totalCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

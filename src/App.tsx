@@ -12,6 +12,7 @@ import './App.css';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('about');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const {
     students,
@@ -33,8 +34,6 @@ const App: React.FC = () => {
     bulkAddStations,
     clearStations,
   } = useStations();
-
-
 
   const renderContent = () => {
     switch (activeTab) {
@@ -86,13 +85,38 @@ const App: React.FC = () => {
     );
   }
 
+  const handleTabChange = (tab: TabId) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false); // Close menu on mobile after selection
+  };
+
   return (
     <div className="app-layout">
+      {/* Mobile Header */}
+      <div className="mobile-header">
+        <button 
+          className="mobile-menu-btn"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+        <div className="mobile-header-title">Rotation Scheduler</div>
+      </div>
+
       <Sidebar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         studentCount={students.length}
         stationCount={stations.length}
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
       />
       <main className="app-main">
         <div className="app-content">{renderContent()}</div>

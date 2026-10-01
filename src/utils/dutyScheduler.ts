@@ -13,6 +13,25 @@ function isHoliday(dateStr: string): boolean {
   return HOLIDAYS.has(mmdd);
 }
 
+function getClosestAssignment(name: string, targetDateStr: string, assignedByDate: Map<string, Set<string>>): { distance: number, closestDate: string | null } {
+  let minDistance = 999;
+  let closestDate: string | null = null;
+  const targetDate = new Date(targetDateStr);
+  
+  for (let i = -5; i <= 5; i++) {
+    if (i === 0) continue;
+    const checkDateStr = format(addDays(targetDate, i), 'yyyy-MM-dd');
+    const set = assignedByDate.get(checkDateStr);
+    if (set && set.has(name)) {
+      if (Math.abs(i) < minDistance) {
+        minDistance = Math.abs(i);
+        closestDate = checkDateStr;
+      }
+    }
+  }
+  return { distance: minDistance, closestDate };
+}
+
 export function generateDutySchedule(
   students: Student[],
   startDate: Date,
@@ -100,44 +119,43 @@ export function generateDutySchedule(
       const dow = day.dayOfWeek;
       const dowCounter = dayCount[dow];
 
-      const yesterdayStr = format(addDays(new Date(day.date), -1), 'yyyy-MM-dd');
-      const tomorrowStr = format(addDays(new Date(day.date), 1), 'yyyy-MM-dd');
-      const assignedYesterday = assignedByDate.get(yesterdayStr) || new Set<string>();
-      const assignedTomorrow = assignedByDate.get(tomorrowStr) || new Set<string>();
-
-      const isAdjacent = (name: string) => assignedYesterday.has(name) || assignedTomorrow.has(name);
-
-      // Candidates: not used this week yet
-      let candidates = names.filter((name) => !usedThisWeek.has(name));
-
-      // Try to filter out adjacent to avoid consecutive shifts
-      let nonAdjacentCandidates = candidates.filter((name) => !isAdjacent(name));
-
-      if (nonAdjacentCandidates.length >= STUDENTS_PER_DAY) {
-        candidates = nonAdjacentCandidates;
+      const dists = new Map<string, ReturnType<typeof getClosestAssignment>>();
+      for (const name of names) {
+        dists.set(name, getClosestAssignment(name, day.date, assignedByDate));
       }
 
-      // ponytail: if pool exhausted, allow reuse
-      if (candidates.length < STUDENTS_PER_DAY) {
-        let fallbackCandidates = [...names];
-        let fallbackNonAdjacent = fallbackCandidates.filter((name) => !isAdjacent(name));
-        if (fallbackNonAdjacent.length >= STUDENTS_PER_DAY) {
-          candidates = fallbackNonAdjacent;
+      // Initial pool: not used this week
+      let pool = names.filter((name) => !usedThisWeek.has(name));
+
+      // Try to find candidates with distance >= 5 in the unused pool
+      const poolPerfect = pool.filter((name) => dists.get(name)!.distance >= 5);
+
+      let candidates: string[];
+      if (poolPerfect.length >= STUDENTS_PER_DAY) {
+        candidates = poolPerfect;
+      } else {
+        // Not enough perfect candidates, fall back to unused pool (which includes some with dist < 5)
+        if (pool.length >= STUDENTS_PER_DAY) {
+          candidates = pool;
         } else {
-          candidates = fallbackCandidates;
+          // Unused pool exhausted, must reuse students from this week
+          candidates = [...names];
         }
       }
 
       // Sort priority:
-      //   0. Adjacent status (penalize those who are adjacent if we had to fallback to them)
-      //   1. If holiday -> Holiday count (ascending) to guarantee 1 shift per person
-      //   2. Total count (ascending) — ensures total spread ≤ 1
-      //   3. This specific day's count (ascending) — balances ALL days evenly
+      //   0. Penalty for distance < 5 (ascending)
+      //   1. If holiday -> Holiday count (ascending)
+      //   2. Total count (ascending)
+      //   3. This specific day's count (ascending)
       //   4. Random tiebreak
       candidates.sort((a, b) => {
-        const aAdj = isAdjacent(a) ? 1 : 0;
-        const bAdj = isAdjacent(b) ? 1 : 0;
-        if (aAdj !== bAdj) return aAdj - bAdj;
+        const distA = dists.get(a)!.distance;
+        const distB = dists.get(b)!.distance;
+        const penaltyA = Math.max(0, 5 - distA);
+        const penaltyB = Math.max(0, 5 - distB);
+
+        if (penaltyA !== penaltyB) return penaltyA - penaltyB;
 
         if (day.holiday) {
           const hDiff = (holidayCount.get(a) ?? 0) - (holidayCount.get(b) ?? 0);
@@ -163,11 +181,11 @@ export function generateDutySchedule(
         dowCounter.set(name, (dowCounter.get(name) ?? 0) + 1);
         if (day.holiday) holidayCount.set(name, (holidayCount.get(name) ?? 0) + 1);
 
-        if (assignedYesterday.has(name)) {
-          warnings.add(`มีการขึ้นเวรติดกัน: ${name} (${yesterdayStr} และ ${day.date})`);
-        }
-        if (assignedTomorrow.has(name)) {
-          warnings.add(`มีการขึ้นเวรติดกัน: ${name} (${day.date} และ ${tomorrowStr})`);
+        const closest = dists.get(name)!;
+        if (closest.closestDate && closest.distance < 5) {
+          const d1 = day.date < closest.closestDate ? day.date : closest.closestDate;
+          const d2 = day.date < closest.closestDate ? closest.closestDate : day.date;
+          warnings.add(`เวรห่างกันเพียง ${closest.distance} วัน: ${name} (${d1} และ ${d2})`);
         }
       }
 

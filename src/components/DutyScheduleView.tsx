@@ -95,9 +95,9 @@ export const DutyScheduleView: React.FC<DutyScheduleViewProps> = ({ students }) 
 
   return (
     <div className="duty-view animate-fade-in">
-      <h2 className="section-title">ตารางเวรพยาบาล</h2>
+      <h2 className="section-title">ตารางเวรนักเรียนพยาบาลวิสัญญี</h2>
       <p className="section-subtitle">
-        จัดเวรนักเรียนพยาบาล 3 คน/วัน (จันทร์-อาทิตย์) กระจายให้เท่าเทียม
+        จัดเวรนักเรียนพยาบาลวิสัญญี 3 คน/วัน (จันทร์-อาทิตย์) กระจายให้เท่าเทียม
       </p>
 
       {/* Controls */}

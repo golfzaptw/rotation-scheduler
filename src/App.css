@@ -55,6 +55,7 @@
     width: 32px;
     height: 32px;
     border-radius: var(--radius-sm);
+    flex-shrink: 0;
   }
   
   .mobile-menu-btn:hover {

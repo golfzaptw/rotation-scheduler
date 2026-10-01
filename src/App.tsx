@@ -7,6 +7,7 @@ import { ScheduleView } from './components/ScheduleView';
 import { StudentManager } from './components/StudentManager';
 import { StationManager } from './components/StationManager';
 import { DutyScheduleView } from './components/DutyScheduleView';
+import { AboutView } from './components/AboutView';
 import './App.css';
 
 const App: React.FC = () => {
@@ -37,6 +38,8 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'about':
+        return <AboutView />;
       case 'schedule':
         return (
           <ScheduleView

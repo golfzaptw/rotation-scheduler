@@ -64,7 +64,7 @@ export interface DutyScheduleResult {
 
 /* ---- Tabs ---- */
 
-export type TabId = 'schedule' | 'students' | 'stations' | 'duty';
+export type TabId = 'about' | 'schedule' | 'students' | 'stations' | 'duty';
 
 export interface TabItem {
   id: TabId;
@@ -73,6 +73,7 @@ export interface TabItem {
 }
 
 export const TABS: TabItem[] = [
+  { id: 'about', label: 'About', icon: 'ℹ️' },
   { id: 'schedule', label: 'Schedule', icon: '📅' },
   { id: 'students', label: 'Students', icon: '👥' },
   { id: 'stations', label: 'Stations', icon: '🏥' },

@@ -91,6 +91,7 @@ export const DutyScheduleView: React.FC<DutyScheduleViewProps> = ({ students }) 
 
   const warnings: string[] = [];
   if (students.length < 3) warnings.push('ต้องมีนักเรียนอย่างน้อย 3 คน (เพิ่มได้ที่ Students tab)');
+  if (result?.warnings) warnings.push(...result.warnings);
 
   return (
     <div className="duty-view animate-fade-in">

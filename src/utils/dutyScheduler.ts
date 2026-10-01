@@ -74,6 +74,13 @@ export function generateDutySchedule(
   }
   if (currentWeek.length > 0) weeks.push(currentWeek);
 
+  // Keep track of assignments by date string to check adjacent days
+  const assignedByDate = new Map<string, Set<string>>();
+  for (const day of allDays) {
+    assignedByDate.set(day.date, new Set<string>());
+  }
+  const warnings = new Set<string>();
+
   // Assign duties week by week
   const result: DutyDay[] = [];
 
@@ -93,20 +100,45 @@ export function generateDutySchedule(
       const dow = day.dayOfWeek;
       const dowCounter = dayCount[dow];
 
+      const yesterdayStr = format(addDays(new Date(day.date), -1), 'yyyy-MM-dd');
+      const tomorrowStr = format(addDays(new Date(day.date), 1), 'yyyy-MM-dd');
+      const assignedYesterday = assignedByDate.get(yesterdayStr) || new Set<string>();
+      const assignedTomorrow = assignedByDate.get(tomorrowStr) || new Set<string>();
+
+      const isAdjacent = (name: string) => assignedYesterday.has(name) || assignedTomorrow.has(name);
+
       // Candidates: not used this week yet
       let candidates = names.filter((name) => !usedThisWeek.has(name));
 
+      // Try to filter out adjacent to avoid consecutive shifts
+      let nonAdjacentCandidates = candidates.filter((name) => !isAdjacent(name));
+
+      if (nonAdjacentCandidates.length >= STUDENTS_PER_DAY) {
+        candidates = nonAdjacentCandidates;
+      }
+
       // ponytail: if pool exhausted, allow reuse
       if (candidates.length < STUDENTS_PER_DAY) {
-        candidates = [...names];
+        let fallbackCandidates = [...names];
+        let fallbackNonAdjacent = fallbackCandidates.filter((name) => !isAdjacent(name));
+        if (fallbackNonAdjacent.length >= STUDENTS_PER_DAY) {
+          candidates = fallbackNonAdjacent;
+        } else {
+          candidates = fallbackCandidates;
+        }
       }
 
       // Sort priority:
+      //   0. Adjacent status (penalize those who are adjacent if we had to fallback to them)
       //   1. If holiday -> Holiday count (ascending) to guarantee 1 shift per person
       //   2. Total count (ascending) — ensures total spread ≤ 1
       //   3. This specific day's count (ascending) — balances ALL days evenly
       //   4. Random tiebreak
       candidates.sort((a, b) => {
+        const aAdj = isAdjacent(a) ? 1 : 0;
+        const bAdj = isAdjacent(b) ? 1 : 0;
+        if (aAdj !== bAdj) return aAdj - bAdj;
+
         if (day.holiday) {
           const hDiff = (holidayCount.get(a) ?? 0) - (holidayCount.get(b) ?? 0);
           if (hDiff !== 0) return hDiff;
@@ -122,12 +154,21 @@ export function generateDutySchedule(
       });
 
       const assigned = candidates.slice(0, STUDENTS_PER_DAY);
+      const todaySet = assignedByDate.get(day.date)!;
 
       for (const name of assigned) {
         usedThisWeek.add(name);
+        todaySet.add(name);
         totalCount.set(name, (totalCount.get(name) ?? 0) + 1);
         dowCounter.set(name, (dowCounter.get(name) ?? 0) + 1);
         if (day.holiday) holidayCount.set(name, (holidayCount.get(name) ?? 0) + 1);
+
+        if (assignedYesterday.has(name)) {
+          warnings.add(`มีการขึ้นเวรติดกัน: ${name} (${yesterdayStr} และ ${day.date})`);
+        }
+        if (assignedTomorrow.has(name)) {
+          warnings.add(`มีการขึ้นเวรติดกัน: ${name} (${day.date} และ ${tomorrowStr})`);
+        }
       }
 
       result.push({

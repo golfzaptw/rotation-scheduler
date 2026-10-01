@@ -59,6 +59,7 @@ export interface DutyScheduleResult {
   stats: DutyStats[];
   startDate: string;
   endDate: string;
+  warnings?: string[];
 }
 
 /* ---- Tabs ---- */

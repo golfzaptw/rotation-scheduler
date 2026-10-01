@@ -4,6 +4,31 @@ import type { Student, DutyDay, DutyStats, DutyScheduleResult } from '../types';
 const STUDENTS_PER_DAY = 3;
 const HOLIDAYS = new Set(['12-30', '12-31', '01-01', '04-12', '04-13', '04-14', '04-15']);
 
+// Seeded random number generator (Mulberry32)
+function mulberry32(a: number) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+
+// Simple string hash function (cyrb53)
+function cyrb53(str: string, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+
 function isWeekend(dayOfWeek: number): boolean {
   return dayOfWeek === 0 || dayOfWeek === 6;
 }
@@ -44,6 +69,10 @@ export function generateDutySchedule(
   if (n < STUDENTS_PER_DAY) {
     return { days: [], stats: [], startDate: '', endDate: '' };
   }
+
+  // Create deterministic seed based on input
+  const seedString = `${startDate.toISOString()}-${endDate.toISOString()}-${names.join(',')}`;
+  const random = mulberry32(cyrb53(seedString));
 
   // Build list of all days in range
   const allDays: { date: string; dayOfWeek: number; weekend: boolean; holiday: boolean }[] = [];
@@ -112,7 +141,7 @@ export function generateDutySchedule(
     const shuffledWeek = [...week].sort((a, b) => {
       if (a.holiday && !b.holiday) return -1;
       if (!a.holiday && b.holiday) return 1;
-      return Math.random() - 0.5;
+      return random() - 0.5;
     });
 
     for (const day of shuffledWeek) {
@@ -168,7 +197,7 @@ export function generateDutySchedule(
         const dowDiff = (dowCounter.get(a) ?? 0) - (dowCounter.get(b) ?? 0);
         if (dowDiff !== 0) return dowDiff;
 
-        return Math.random() - 0.5;
+        return random() - 0.5;
       });
 
       const assigned = candidates.slice(0, STUDENTS_PER_DAY);

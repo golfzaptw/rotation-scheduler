@@ -263,6 +263,10 @@
     display: block;
   }
 
+  .duty-grid-wrapper {
+    overflow: visible !important;
+  }
+
   /* 1 Month per page */
   .duty-month-block {
     page-break-after: always;

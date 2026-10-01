@@ -11,7 +11,7 @@ import { AboutView } from './components/AboutView';
 import './App.css';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabId>('schedule');
+  const [activeTab, setActiveTab] = useState<TabId>('about');
 
   const {
     students,

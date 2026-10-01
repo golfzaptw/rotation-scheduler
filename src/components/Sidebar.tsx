@@ -7,6 +7,8 @@ interface SidebarProps {
   onTabChange: (tab: TabId) => void;
   studentCount: number;
   stationCount: number;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -14,6 +16,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
   studentCount,
   stationCount,
+  isOpen,
+  onClose,
 }) => {
   const getCounts = (id: TabId): number | null => {
     switch (id) {
@@ -24,41 +28,50 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="sidebar glass-card">
-      <div className="sidebar-brand">
-        <div className="sidebar-logo">R</div>
-        <div className="sidebar-brand-text">
-          <h1 className="sidebar-title">Rotation</h1>
-          <span className="sidebar-subtitle">Clinical Scheduler</span>
+    <>
+      {/* Mobile Overlay */}
+      <div 
+        className={`sidebar-overlay ${isOpen ? 'open' : ''}`} 
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      
+      <aside className={`sidebar glass-card ${isOpen ? 'open' : ''}`}>
+        <div className="sidebar-brand">
+          <div className="sidebar-logo">R</div>
+          <div className="sidebar-brand-text">
+            <h1 className="sidebar-title">Rotation</h1>
+            <span className="sidebar-subtitle">Clinical Scheduler</span>
+          </div>
         </div>
-      </div>
 
-      <nav className="sidebar-nav">
-        {TABS.map((tab) => {
-          const count = getCounts(tab.id);
-          return (
-            <button
-              key={tab.id}
-              id={`nav-${tab.id}`}
-              className={`sidebar-nav-item ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => onTabChange(tab.id)}
-            >
-              <span className="sidebar-nav-icon">{tab.icon}</span>
-              <span className="sidebar-nav-label">{tab.label}</span>
-              {count !== null && (
-                <span className="sidebar-nav-badge">{count}</span>
-              )}
-              {activeTab === tab.id && (
-                <span className="sidebar-nav-indicator" />
-              )}
-            </button>
-          );
-        })}
-      </nav>
+        <nav className="sidebar-nav">
+          {TABS.map((tab) => {
+            const count = getCounts(tab.id);
+            return (
+              <button
+                key={tab.id}
+                id={`nav-${tab.id}`}
+                className={`sidebar-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => onTabChange(tab.id)}
+              >
+                <span className="sidebar-nav-icon">{tab.icon}</span>
+                <span className="sidebar-nav-label">{tab.label}</span>
+                {count !== null && (
+                  <span className="sidebar-nav-badge">{count}</span>
+                )}
+                {activeTab === tab.id && (
+                  <span className="sidebar-nav-indicator" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
 
-      <div className="sidebar-footer">
-        <span className="sidebar-footer-text">v1.0 • localStorage</span>
-      </div>
-    </aside>
+        <div className="sidebar-footer">
+          <span className="sidebar-footer-text">v1.0 • localStorage</span>
+        </div>
+      </aside>
+    </>
   );
 };
